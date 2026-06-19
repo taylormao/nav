@@ -1,5 +1,6 @@
 // ============================================================
 // Navigation Data — DataStore with localStorage persistence
+// Supports sub-categories via optional `sub` array
 // ============================================================
 
 const DEFAULT_DATA = [
@@ -15,7 +16,8 @@ const DEFAULT_DATA = [
       { name: '百度地图', url: 'https://map.baidu.com', icon: '🗺️', description: '在线地图' },
       { name: '高德地图', url: 'https://www.amap.com', icon: '📍', description: '导航出行' },
       { name: 'DeepL', url: 'https://www.deepl.com/translator', icon: '📝', description: 'AI翻译' },
-    ]
+    ],
+    sub: [],
   },
   {
     name: '社交媒体',
@@ -28,7 +30,8 @@ const DEFAULT_DATA = [
       { name: 'Twitter/X', url: 'https://x.com', icon: '🐦', description: '社交网络' },
       { name: 'Reddit', url: 'https://www.reddit.com', icon: '🤖', description: '英文论坛' },
       { name: '小红书', url: 'https://www.xiaohongshu.com', icon: '📕', description: '生活方式分享' },
-    ]
+    ],
+    sub: [],
   },
   {
     name: '开发者',
@@ -38,11 +41,27 @@ const DEFAULT_DATA = [
       { name: 'GitLab', url: 'https://gitlab.com', icon: '🦊', description: 'DevOps平台' },
       { name: 'Stack Overflow', url: 'https://stackoverflow.com', icon: '📚', description: '技术问答' },
       { name: 'MDN', url: 'https://developer.mozilla.org', icon: '📖', description: 'Web文档' },
-      { name: 'NPM', url: 'https://www.npmjs.com', icon: '📦', description: 'Node包管理' },
-      { name: 'VS Code', url: 'https://code.visualstudio.com', icon: '🖥️', description: '代码编辑器' },
-      { name: 'CodePen', url: 'https://codepen.io', icon: '✏️', description: '在线代码编辑' },
-      { name: 'DevDocs', url: 'https://devdocs.io', icon: '📋', description: 'API文档聚合' },
-    ]
+    ],
+    sub: [
+      {
+        name: '前端',
+        icon: '🎨',
+        sites: [
+          { name: 'React', url: 'https://react.dev', icon: '⚛️', description: 'UI 框架' },
+          { name: 'Vue.js', url: 'https://vuejs.org', icon: '💚', description: '渐进式框架' },
+          { name: 'Tailwind CSS', url: 'https://tailwindcss.com', icon: '🎐', description: 'CSS 工具集' },
+        ],
+      },
+      {
+        name: '后端 & DevOps',
+        icon: '⚙️',
+        sites: [
+          { name: 'Node.js', url: 'https://nodejs.org', icon: '🟢', description: 'JS 运行时' },
+          { name: 'Docker', url: 'https://hub.docker.com', icon: '🐳', description: '容器平台' },
+          { name: 'NPM', url: 'https://www.npmjs.com', icon: '📦', description: 'Node包管理' },
+        ],
+      },
+    ],
   },
   {
     name: 'AI 工具',
@@ -54,7 +73,8 @@ const DEFAULT_DATA = [
       { name: 'DeepSeek', url: 'https://chat.deepseek.com', icon: '🔮', description: '深度求索' },
       { name: 'Hugging Face', url: 'https://huggingface.co', icon: '🤗', description: 'AI模型社区' },
       { name: 'Perplexity', url: 'https://www.perplexity.ai', icon: '🔬', description: 'AI搜索引擎' },
-    ]
+    ],
+    sub: [],
   },
   {
     name: '视频娱乐',
@@ -66,7 +86,8 @@ const DEFAULT_DATA = [
       { name: 'Netflix', url: 'https://www.netflix.com', icon: '🎬', description: '流媒体' },
       { name: 'Twitch', url: 'https://www.twitch.tv', icon: '🎮', description: '直播平台' },
       { name: '优酷', url: 'https://www.youku.com', icon: '📹', description: '视频网站' },
-    ]
+    ],
+    sub: [],
   },
   {
     name: '购物',
@@ -78,7 +99,8 @@ const DEFAULT_DATA = [
       { name: 'Amazon', url: 'https://www.amazon.com', icon: '📦', description: '全球电商' },
       { name: '1688', url: 'https://www.1688.com', icon: '🏭', description: '批发平台' },
       { name: '什么值得买', url: 'https://www.smzdm.com', icon: '💰', description: '优惠导购' },
-    ]
+    ],
+    sub: [],
   },
   {
     name: '学习资源',
@@ -90,7 +112,8 @@ const DEFAULT_DATA = [
       { name: 'GitHub中文社区', url: 'https://github.com/ruanyf/weekly', icon: '📰', description: '科技周刊' },
       { name: '阮一峰博客', url: 'https://www.ruanyifeng.com', icon: '📝', description: '技术博客' },
       { name: 'WikiHow', url: 'https://zh.wikihow.com', icon: '📗', description: '生活百科' },
-    ]
+    ],
+    sub: [],
   },
   {
     name: '资源仓库',
@@ -102,20 +125,19 @@ const DEFAULT_DATA = [
       { name: 'Pinterest', url: 'https://www.pinterest.com', icon: '📌', description: '图片灵感' },
       { name: 'Unsplash', url: 'https://unsplash.com', icon: '🖼️', description: '免费图片' },
       { name: 'Iconfont', url: 'https://www.iconfont.cn', icon: '🎨', description: '图标资源' },
-    ]
+    ],
+    sub: [],
   },
 ];
 
 // ============================================================
-// DataStore — localStorage-backed CRUD for categories & sites
+// DataStore — localStorage-backed CRUD
 // ============================================================
 
 const DataStore = {
   STORAGE_KEY: 'nav-data',
 
-  _clone(obj) {
-    return JSON.parse(JSON.stringify(obj));
-  },
+  _clone(obj) { return JSON.parse(JSON.stringify(obj)); },
 
   load() {
     try {
@@ -124,28 +146,32 @@ const DataStore = {
         const data = JSON.parse(raw);
         if (Array.isArray(data) && data.length > 0) return data;
       }
-    } catch (e) { /* corrupted data, use defaults */ }
+    } catch (e) { /* corrupted */ }
     const seed = this._clone(DEFAULT_DATA);
     this.save(seed);
     return seed;
   },
 
   save(data) {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-    } catch (e) { /* quota exceeded */ }
+    // Ensure every category has a `sub` array
+    data.forEach(c => { if (!c.sub) c.sub = []; });
+    try { localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data)); } catch (e) { /* quota */ }
     this._notify();
   },
 
-  _notify() {
-    window.dispatchEvent(new CustomEvent('navDataChanged'));
+  _notify() { window.dispatchEvent(new CustomEvent('navDataChanged')); },
+
+  /** Get sites array for a given catIndex / subIndex */
+  _getSites(data, catIndex, subIndex) {
+    if (subIndex != null) return data[catIndex].sub[subIndex].sites;
+    return data[catIndex].sites;
   },
 
   // ---- Category CRUD ----
 
   addCategory(name, icon) {
     const data = this.load();
-    data.push({ name: name.trim(), icon: icon.trim() || '📁', sites: [] });
+    data.push({ name: name.trim(), icon: icon.trim() || '📁', sites: [], sub: [] });
     this.save(data);
   },
 
@@ -173,12 +199,42 @@ const DataStore = {
     this.save(data);
   },
 
-  // ---- Site CRUD ----
+  // ---- Sub-Category CRUD ----
 
-  addSite(catIndex, site) {
+  addSubCategory(parentIndex, name, icon) {
+    const data = this.load();
+    if (parentIndex < 0 || parentIndex >= data.length) return;
+    if (!data[parentIndex].sub) data[parentIndex].sub = [];
+    data[parentIndex].sub.push({ name: name.trim(), icon: icon.trim() || '📁', sites: [] });
+    this.save(data);
+  },
+
+  updateSubCategory(parentIndex, subIndex, name, icon) {
+    const data = this.load();
+    if (parentIndex < 0 || parentIndex >= data.length) return;
+    const sub = data[parentIndex].sub;
+    if (!sub || subIndex < 0 || subIndex >= sub.length) return;
+    sub[subIndex].name = name.trim() || sub[subIndex].name;
+    sub[subIndex].icon = icon.trim() || sub[subIndex].icon;
+    this.save(data);
+  },
+
+  deleteSubCategory(parentIndex, subIndex) {
+    const data = this.load();
+    if (parentIndex < 0 || parentIndex >= data.length) return;
+    const sub = data[parentIndex].sub;
+    if (!sub || subIndex < 0 || subIndex >= sub.length) return;
+    sub.splice(subIndex, 1);
+    this.save(data);
+  },
+
+  // ---- Site CRUD (catIndex, subIndex?, siteIndex, site?) ----
+
+  addSite(catIndex, subIndex, site) {
     const data = this.load();
     if (catIndex < 0 || catIndex >= data.length) return;
-    data[catIndex].sites.push({
+    const sites = this._getSites(data, catIndex, subIndex);
+    sites.push({
       name: site.name.trim(),
       url: site.url.trim(),
       icon: site.icon || '🔗',
@@ -187,10 +243,10 @@ const DataStore = {
     this.save(data);
   },
 
-  updateSite(catIndex, siteIndex, site) {
+  updateSite(catIndex, subIndex, siteIndex, site) {
     const data = this.load();
     if (catIndex < 0 || catIndex >= data.length) return;
-    const sites = data[catIndex].sites;
+    const sites = this._getSites(data, catIndex, subIndex);
     if (siteIndex < 0 || siteIndex >= sites.length) return;
     sites[siteIndex].name = site.name.trim() || sites[siteIndex].name;
     sites[siteIndex].url = site.url.trim() || sites[siteIndex].url;
@@ -199,12 +255,17 @@ const DataStore = {
     this.save(data);
   },
 
-  deleteSite(catIndex, siteIndex) {
+  deleteSite(catIndex, subIndex, siteIndex) {
     const data = this.load();
     if (catIndex < 0 || catIndex >= data.length) return;
-    const sites = data[catIndex].sites;
+    const sites = this._getSites(data, catIndex, subIndex);
     if (siteIndex < 0 || siteIndex >= sites.length) return;
     sites.splice(siteIndex, 1);
     this.save(data);
+  },
+
+  /** Total sites including sub-categories */
+  totalSites(data) {
+    return data.reduce((sum, c) => sum + c.sites.length + (c.sub || []).reduce((s, sc) => s + sc.sites.length, 0), 0);
   },
 };

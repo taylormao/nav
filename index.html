@@ -133,11 +133,18 @@
             <input type="text" id="catIcon" placeholder="图标 (emoji，如 📁)" autocomplete="off" maxlength="4">
             <button class="btn btn-primary" id="catAddBtn">添加分类</button>
           </div>
+          <div class="admin-form">
+            <select id="subParentCat"></select>
+            <input type="text" id="subCatName" placeholder="子分类名称" autocomplete="off">
+            <input type="text" id="subCatIcon" placeholder="子分类图标 (emoji)" autocomplete="off" maxlength="4">
+            <button class="btn btn-primary" id="subCatAddBtn">添加子分类</button>
+          </div>
           <ul class="admin-list" id="catList"></ul>
         </div>
         <div class="admin-tab-content" id="tabSites">
           <div class="admin-form">
             <select id="siteCategory"></select>
+            <select id="siteSubCategory"></select>
             <input type="url" id="siteUrl" placeholder="网站 URL (如 https://example.com)" autocomplete="off">
             <div class="favicon-preview" id="faviconPreview" hidden>
               <span>自动抓取：</span>

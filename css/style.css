@@ -205,6 +205,20 @@ input { font-family: inherit; font-size: inherit; }
 .site-card-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .empty-hint { grid-column: 1 / -1; text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 16px 0; }
 
+/* Sub-section (二级分类) */
+.sub-section { margin-bottom: 20px; }
+.sub-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-left: 8px; }
+.sub-icon { font-size: 1.1rem; }
+.sub-name { font-size: 1rem; font-weight: 600; color: var(--text-secondary); }
+
+/* Sidebar sub-item */
+.sidebar-sub { padding-left: 36px; font-size: 0.8rem; opacity: 0.85; }
+.sidebar-sub .sidebar-icon { font-size: 0.95rem; }
+
+/* Admin sub-item */
+.admin-sub-item { padding-left: 28px; background: var(--bg-card); }
+.admin-sub-item .admin-item-name { font-size: 0.84rem; color: var(--text-secondary); }
+
 /* ============================================================
    Footer
    ============================================================ */

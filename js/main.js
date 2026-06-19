@@ -2,7 +2,7 @@
 // Main — initialization, rendering, keyboard shortcuts, sidebar
 // ============================================================
 
-const APP_VERSION = '1.5.0';
+const APP_VERSION = '1.7.0';
 
 (function () {
   'use strict';
@@ -24,7 +24,7 @@ const APP_VERSION = '1.5.0';
     return '🔗';
   }
 
-  // --- Render navigation cards from DataStore ---
+  // --- Render navigation cards from DataStore (supports sub-categories) ---
   function renderNav() {
     const container = document.getElementById('navContent');
     if (!container) return;
@@ -33,6 +33,7 @@ const APP_VERSION = '1.5.0';
     let html = '';
 
     data.forEach((category, i) => {
+      // Parent category cards
       html += `
         <section class="category-section" id="cat-${i}">
           <div class="category-header">
@@ -41,27 +42,46 @@ const APP_VERSION = '1.5.0';
           </div>
           <div class="card-grid">
             ${category.sites.length > 0
-              ? category.sites.map(site => `
-                <a href="${site.url}" target="_blank" rel="noopener noreferrer" class="site-card" title="${site.name}${site.description ? ' - ' + site.description : ''}">
-                  <span class="site-card-icon">${renderIcon(site.icon)}</span>
-                  <span class="site-card-info">
-                    <span class="site-card-name">${site.name}</span>
-                    ${site.description ? `<span class="site-card-desc">${site.description}</span>` : ''}
-                  </span>
-                </a>
-              `).join('')
+              ? category.sites.map(site => cardHTML(site)).join('')
               : '<p class="empty-hint">暂无网址</p>'
             }
-          </div>
-        </section>
-      `;
+          </div>`;
+
+      // Sub-category sections
+      if (category.sub && category.sub.length > 0) {
+        category.sub.forEach((sub, si) => {
+          html += `
+          <section class="sub-section" id="cat-${i}-sub-${si}">
+            <div class="sub-header">
+              <span class="sub-icon">${sub.icon}</span>
+              <h3 class="sub-name">${sub.name}</h3>
+            </div>
+            <div class="card-grid">
+              ${sub.sites.length > 0
+                ? sub.sites.map(site => cardHTML(site)).join('')
+                : '<p class="empty-hint">暂无网址</p>'
+              }
+            </div>
+          </section>`;
+        });
+      }
+
+      html += `</section>`;
     });
 
     container.innerHTML = html;
-
-    // Rebuild sidebar and re-attach scroll observer after DOM update
     renderSidebar();
     setupScrollSpy();
+  }
+
+  function cardHTML(site) {
+    return `<a href="${site.url}" target="_blank" rel="noopener noreferrer" class="site-card" title="${site.name}${site.description ? ' - ' + site.description : ''}">
+      <span class="site-card-icon">${renderIcon(site.icon)}</span>
+      <span class="site-card-info">
+        <span class="site-card-name">${site.name}</span>
+        ${site.description ? `<span class="site-card-desc">${site.description}</span>` : ''}
+      </span>
+    </a>`;
   }
 
   // --- Render sidebar navigation ---
@@ -70,15 +90,26 @@ const APP_VERSION = '1.5.0';
     if (!nav) return;
 
     const data = DataStore.load();
+    let html = '';
 
-    nav.innerHTML = data.map((category, i) => `
-      <li class="sidebar-item" data-target="cat-${i}">
+    data.forEach((category, i) => {
+      html += `<li class="sidebar-item" data-target="cat-${i}">
         <span class="sidebar-icon">${category.icon}</span>
         <span class="sidebar-label">${escapeHTML(category.name)}</span>
-      </li>
-    `).join('');
+      </li>`;
+      if (category.sub && category.sub.length > 0) {
+        category.sub.forEach((sub, si) => {
+          html += `<li class="sidebar-item sidebar-sub" data-target="cat-${i}-sub-${si}">
+            <span class="sidebar-icon">${sub.icon}</span>
+            <span class="sidebar-label">${escapeHTML(sub.name)}</span>
+          </li>`;
+        });
+      }
+    });
 
-    // Click handler: scroll to category section
+    nav.innerHTML = html;
+
+    // Click handlers
     nav.querySelectorAll('.sidebar-item').forEach(item => {
       item.addEventListener('click', () => {
         const targetId = item.dataset.target;
@@ -86,7 +117,6 @@ const APP_VERSION = '1.5.0';
         if (section) {
           section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-        // Close sidebar on mobile after clicking
         const sidebar = document.getElementById('sidebar');
         if (sidebar && window.innerWidth <= 900) {
           sidebar.classList.remove('open');
