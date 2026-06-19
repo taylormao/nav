@@ -3,17 +3,34 @@
 // Auto-sync on load (pull) and on every data change (push)
 // ============================================================
 
+// ⚠️ 默认 R2 配置 — 硬编码在页面中，所有访客可见
+// 安全性：仅用于个人/小团队导航页，Token 可读写你的 R2 数据
+const DEFAULT_R2_CONFIG = {
+  workerUrl: 'https://nav-r2-sync.mds37215735.workers.dev',
+  authToken: 'nav-r2-mysecret2026',
+};
+
 const CloudSync = {
   CONFIG_KEY: 'nav-r2-config',
   LAST_PUSH_KEY: 'nav-r2-lastpush',
   _pushTimer: null,
 
-  /** Get saved R2 config */
+  /** Get R2 config: admin panel override first, then defaults */
   getConfig() {
     try {
       const raw = localStorage.getItem(this.CONFIG_KEY);
-      return raw ? JSON.parse(raw) : { workerUrl: '', authToken: '' };
-    } catch (e) { return { workerUrl: '', authToken: '' }; }
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.workerUrl && saved.authToken) return saved;
+      }
+    } catch (e) { /* use defaults */ }
+    return { ...DEFAULT_R2_CONFIG };
+  },
+
+  /** Check if R2 is configured (always true with defaults) */
+  isConfigured() {
+    const cfg = this.getConfig();
+    return !!(cfg.workerUrl && cfg.authToken);
   },
 
   /** Save R2 config (auto-add https:// if missing) */
