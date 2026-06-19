@@ -13,10 +13,14 @@ const CloudSync = {
     } catch (e) { return { workerUrl: '', authToken: '' }; }
   },
 
-  /** Save R2 config */
+  /** Save R2 config (auto-add https:// if missing) */
   setConfig(workerUrl, authToken) {
+    let url = workerUrl.trim();
+    if (url && !/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
     localStorage.setItem(this.CONFIG_KEY, JSON.stringify({
-      workerUrl: workerUrl.trim(),
+      workerUrl: url,
       authToken: authToken.trim(),
     }));
   },
