@@ -1,9 +1,12 @@
 // ============================================================
 // Sync — Cloudflare R2 sync via Worker proxy
+// Auto-sync on load (pull) and on every data change (push)
 // ============================================================
 
 const CloudSync = {
   CONFIG_KEY: 'nav-r2-config',
+  LAST_PUSH_KEY: 'nav-r2-lastpush',
+  _pushTimer: null,
 
   /** Get saved R2 config */
   getConfig() {
@@ -43,7 +46,7 @@ const CloudSync = {
         headers: { 'X-Auth-Token': cfg.authToken },
         signal: AbortSignal.timeout(5000),
       });
-      if (res.ok || res.status === 405) return { ok: true }; // 405 = method not allowed but auth passed
+      if (res.ok) return { ok: true };
       if (res.status === 401) return { ok: false, error: 'Auth Token 验证失败 (401)' };
       return { ok: false, error: `服务返回状态 ${res.status}` };
     } catch (e) {
@@ -58,12 +61,13 @@ const CloudSync = {
       return { ok: false, error: '请先配置 R2 连接' };
     }
     try {
+      const now = new Date().toISOString();
       const payload = {
         navData: DataStore.load(),
         searchEngine: localStorage.getItem('nav-search-engine') || 'google',
         theme: localStorage.getItem('nav-theme') || null,
         background: localStorage.getItem('nav-bg') || null,
-        updatedAt: new Date().toISOString(),
+        updatedAt: now,
       };
       const res = await fetch(cfg.workerUrl, {
         method: 'PUT',
@@ -74,7 +78,10 @@ const CloudSync = {
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(10000),
       });
-      if (res.ok) return { ok: true };
+      if (res.ok) {
+        localStorage.setItem(this.LAST_PUSH_KEY, now);
+        return { ok: true };
+      }
       const body = await res.text();
       return { ok: false, error: `上传失败 ${res.status}: ${body}` };
     } catch (e) {
@@ -99,35 +106,42 @@ const CloudSync = {
       if (!payload.navData || !Array.isArray(payload.navData)) {
         return { ok: false, error: 'R2 中数据格式无效' };
       }
+      // Check if remote is actually newer than our last push
+      if (payload.updatedAt) {
+        const lastPush = localStorage.getItem(this.LAST_PUSH_KEY);
+        if (lastPush && payload.updatedAt <= lastPush) {
+          return { ok: true, data: payload, skipped: true };
+        }
+      }
       // Merge into localStorage
       DataStore.save(payload.navData);
       if (payload.searchEngine) localStorage.setItem('nav-search-engine', payload.searchEngine);
       if (payload.theme) localStorage.setItem('nav-theme', payload.theme); else localStorage.removeItem('nav-theme');
       if (payload.background) localStorage.setItem('nav-bg', payload.background); else localStorage.removeItem('nav-bg');
+      if (payload.updatedAt) localStorage.setItem(this.LAST_PUSH_KEY, payload.updatedAt);
       return { ok: true, data: payload };
     } catch (e) {
       return { ok: false, error: `请求失败: ${e.message}` };
     }
   },
 
-  /** Auto-sync: push after local change (fires silently, no UI feedback needed) */
-  async autoPush() {
+  /** Auto-push on data change (debounced, silent) */
+  autoPush() {
     if (!this.isConfigured()) return;
-    try {
-      await this.push();
-    } catch (e) { /* silent failure */ }
+    clearTimeout(this._pushTimer);
+    this._pushTimer = setTimeout(async () => {
+      try { await this.push(); } catch (e) { /* silent */ }
+    }, 2000); // debounce 2s
   },
 
-  /** Auto-pull on page load if configured */
+  /** Auto-pull on page load — always pulls, merges if remote is newer */
   async autoPull() {
-    if (!this.isConfigured()) return;
+    if (!this.isConfigured()) return false;
     try {
       const result = await this.pull();
-      if (result.ok && result.data) {
+      if (result.ok && !result.skipped && result.data) {
         // Apply theme & background immediately
-        if (result.data.theme) {
-          Theme.apply(result.data.theme);
-        }
+        if (result.data.theme) Theme.apply(result.data.theme);
         if (result.data.background) {
           try {
             const bg = JSON.parse(result.data.background);
@@ -143,7 +157,7 @@ const CloudSync = {
         });
         return true;
       }
-    } catch (e) { /* silent failure — use local data */ }
+    } catch (e) { /* silent */ }
     return false;
   },
 };

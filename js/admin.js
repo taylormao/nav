@@ -227,6 +227,7 @@
     const settings = { image: imageUrl || '', color: color || '#f0f2f5' };
     localStorage.setItem('nav-bg', JSON.stringify(settings));
     setBodyBackground(settings);
+    CloudSync.autoPush();
   }
 
   function resetBackground() {
@@ -236,6 +237,7 @@
     document.getElementById('bgPreview').hidden = true;
     localStorage.removeItem('nav-bg');
     setBodyBackground({ image: '', color: '' });
+    CloudSync.autoPush();
   }
 
   function loadBackgroundSettings() {
