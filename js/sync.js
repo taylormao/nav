@@ -71,7 +71,8 @@ const CloudSync = {
         signal: AbortSignal.timeout(10000),
       });
       if (res.ok) return { ok: true };
-      return { ok: false, error: `上传失败 (${res.status})` };
+      const body = await res.text();
+      return { ok: false, error: `上传失败 ${res.status}: ${body}` };
     } catch (e) {
       return { ok: false, error: `请求失败: ${e.message}` };
     }

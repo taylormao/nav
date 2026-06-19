@@ -1,16 +1,23 @@
 // ============================================================
 // Cloudflare Worker — R2 sync proxy
 // 部署方式: wrangler deploy
-// 需要先创建 R2 bucket: wrangler r2 bucket create nav-data
-// 配置 wrangler.toml 中的 bindings
 // ============================================================
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
-    const key = 'nav-data.json';
+    // CORS preflight — MUST be before auth check
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, PUT, HEAD, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token',
+          'Access-Control-Max-Age': '86400',
+        },
+      });
+    }
 
-    // Simple shared-secret auth
+    // Auth check
     const auth = request.headers.get('X-Auth-Token');
     if (!auth || auth !== env.AUTH_TOKEN) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -19,16 +26,7 @@ export default {
       });
     }
 
-    // CORS preflight
-    if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, PUT, HEAD, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token',
-        },
-      });
-    }
+    const key = 'nav-data.json';
 
     // HEAD — connectivity test
     if (request.method === 'HEAD') {
@@ -54,7 +52,6 @@ export default {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'ETag': obj.httpEtag,
         },
       });
     }
