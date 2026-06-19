@@ -6,7 +6,7 @@
 // ⚠️ 默认 R2 配置 — 硬编码在页面中，所有访客可见
 // 安全性：仅用于个人/小团队导航页，Token 可读写你的 R2 数据
 const DEFAULT_R2_CONFIG = {
-  workerUrl: 'https://nav-r2-sync.mds37215735.workers.dev',
+  workerUrl: 'https://nav-data.915577.xyz',
   authToken: 'nav-r2-mysecret2026',
 };
 
