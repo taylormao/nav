@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网址导航</title>
+  <meta name="description" content="简洁好用的网址导航页面">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <span class="logo-text">🔖 网址导航</span>
+    </div>
+    <div class="top-bar-right">
+      <button class="admin-toggle" id="adminToggle" title="管理导航">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+      <span class="clock" id="clock">00:00</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题" title="切换深色/浅色模式">
+        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Search Section -->
+  <section class="hero">
+    <h1 class="hero-title">网上冲浪 🏄</h1>
+    <div class="search-container">
+      <div class="search-box">
+        <svg class="search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="输入关键词搜索..."
+          autocomplete="off"
+          autofocus
+        >
+        <button class="search-clear" id="searchClear" aria-label="清除搜索">×</button>
+      </div>
+    </div>
+    <div class="engine-selector" id="engineSelector">
+      <button class="engine-btn active" data-engine="google">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <span>Google</span>
+      </button>
+      <button class="engine-btn" data-engine="bing">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#008373" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM8.8 16.5l-2.1-6.3 7.5 3-5.4 3.3z"/></svg>
+        <span>Bing</span>
+      </button>
+      <button class="engine-btn" data-engine="baidu">
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2932e1"/><text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">B</text></svg>
+        <span>百度</span>
+      </button>
+      <button class="engine-btn" data-engine="duckduckgo">
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#de5833"/><path d="M6 8c0-2 3-4 6-4s6 2 6 4-3 6-6 6-6-2-6-6z" fill="white"/><circle cx="10" cy="8" r="1" fill="#de5833"/><circle cx="14" cy="8" r="1" fill="#de5833"/></svg>
+        <span>DuckDuckGo</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Navigation Categories -->
+  <!-- Page Layout: Sidebar + Content -->
+  <div class="page-layout">
+    <nav class="sidebar" id="sidebar">
+      <ul class="sidebar-nav" id="sidebarNav"></ul>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" title="展开分类导航">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <main class="content" id="navContent"></main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 网址导航 · 简洁至上 · <span id="versionDisplay"></span></p>
+  </footer>
+
+  <!-- Auth Modal -->
+  <div class="auth-overlay" id="authOverlay" hidden>
+    <div class="auth-dialog">
+      <h3 class="auth-title">🔐 管理员认证</h3>
+      <div class="auth-state" id="authSetup">
+        <p class="auth-hint">首次使用，请设置管理密码</p>
+        <input type="password" id="authNewPw" class="auth-input" placeholder="设置密码 (至少4位)" autocomplete="off">
+        <input type="password" id="authConfirmPw" class="auth-input" placeholder="确认密码" autocomplete="off">
+        <button class="btn btn-primary auth-btn" id="authSetupBtn">设置密码</button>
+      </div>
+      <div class="auth-state" id="authLogin">
+        <p class="auth-hint">请输入管理密码</p>
+        <input type="password" id="authPw" class="auth-input" placeholder="管理密码" autocomplete="off">
+        <button class="btn btn-primary auth-btn" id="authLoginBtn">登录</button>
+      </div>
+      <p class="auth-error" id="authError" hidden></p>
+      <button class="auth-cancel" id="authCancel">取消</button>
+    </div>
+  </div>
+
+  <!-- Admin Modal -->
+  <div class="admin-overlay" id="adminOverlay" hidden>
+    <div class="admin-panel">
+      <div class="admin-header">
+        <h2 class="admin-title">⚙️ 导航管理</h2>
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-tab="categories">分类管理</button>
+          <button class="admin-tab" data-tab="sites">网址管理</button>
+          <button class="admin-tab" data-tab="appearance">外观设置</button>
+          <button class="admin-tab" data-tab="backup">数据备份</button>
+          <button class="admin-tab" data-tab="r2sync">R2同步</button>
+        </div>
+        <button class="btn btn-sm btn-lock" id="adminLockBtn" title="锁定后台">🔒 锁定</button>
+        <button class="admin-close" id="adminClose" aria-label="关闭">×</button>
+      </div>
+      <div class="admin-body">
+        <div class="admin-tab-content active" id="tabCategories">
+          <div class="admin-form">
+            <input type="text" id="catName" placeholder="分类名称" autocomplete="off">
+            <input type="text" id="catIcon" placeholder="图标 (emoji，如 📁)" autocomplete="off" maxlength="4">
+            <button class="btn btn-primary" id="catAddBtn">添加分类</button>
+          </div>
+          <ul class="admin-list" id="catList"></ul>
+        </div>
+        <div class="admin-tab-content" id="tabSites">
+          <div class="admin-form">
+            <select id="siteCategory"></select>
+            <input type="url" id="siteUrl" placeholder="网站 URL (如 https://example.com)" autocomplete="off">
+            <div class="favicon-preview" id="faviconPreview" hidden>
+              <span>自动抓取：</span>
+              <img id="faviconImg" src="" alt="" width="20" height="20">
+            </div>
+            <input type="text" id="siteName" placeholder="网站名称" autocomplete="off">
+            <input type="text" id="siteDesc" placeholder="描述 (可选)" autocomplete="off">
+            <input type="text" id="siteIcon" placeholder="图标 (emoji 或图片URL，留空自动抓取)" autocomplete="off">
+            <button class="btn btn-primary" id="siteAddBtn">添加网址</button>
+          </div>
+          <ul class="admin-list" id="siteList"></ul>
+        </div>
+        <div class="admin-tab-content" id="tabAppearance">
+          <div class="admin-form">
+            <label class="form-label">背景图片 URL</label>
+            <input type="url" id="bgImageUrl" placeholder="输入图片 URL (留空则使用默认)" autocomplete="off">
+            <div class="bg-preview" id="bgPreview" hidden>
+              <span>预览：</span>
+              <img id="bgPreviewImg" src="" alt="" width="80" height="50" style="object-fit:cover;border-radius:4px;">
+            </div>
+            <label class="form-label">或选择纯色背景</label>
+            <div class="color-picker-row">
+              <input type="color" id="bgColor" value="#f0f2f5">
+              <input type="text" id="bgColorHex" placeholder="#f0f2f5" autocomplete="off" maxlength="7">
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" id="bgApplyBtn">应用背景</button>
+              <button class="btn btn-sm" id="bgResetBtn">重置为默认</button>
+            </div>
+          </div>
+        </div>
+        <div class="admin-tab-content" id="tabBackup">
+          <div class="admin-form">
+            <div class="backup-info" id="backupInfo"></div>
+            <div class="form-actions backup-actions">
+              <button class="btn btn-primary" id="exportBtn">📥 导出备份</button>
+              <label class="btn btn-sm backup-file-label">
+                📤 导入备份
+                <input type="file" id="importFile" accept=".json" hidden>
+              </label>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-sm btn-danger" id="resetDataBtn">🔄 恢复默认数据</button>
+            </div>
+            <p class="backup-hint" id="importMsg" hidden></p>
+          </div>
+        </div>
+        <div class="admin-tab-content" id="tabR2Sync">
+          <div class="admin-form">
+            <p class="form-hint">配置 Cloudflare R2 存储，实现跨设备数据同步。需要先部署配套的 Cloudflare Worker。</p>
+            <input type="url" id="r2WorkerUrl" placeholder="Worker URL (如 https://nav-api.yourname.workers.dev)" autocomplete="off">
+            <input type="password" id="r2AuthToken" placeholder="Auth Token (Worker 中设置的密钥)" autocomplete="off">
+            <div class="form-actions">
+              <button class="btn btn-primary" id="r2SaveBtn">保存配置</button>
+              <button class="btn btn-sm" id="r2TestBtn">测试连接</button>
+            </div>
+            <div class="r2-status" id="r2Status" hidden></div>
+            <div class="form-actions" style="margin-top:8px;">
+              <button class="btn btn-sm" id="r2PushBtn">📤 推送本地数据到 R2</button>
+              <button class="btn btn-sm" id="r2PullBtn">📥 从 R2 拉取数据</button>
+            </div>
+            <p class="backup-hint" id="r2Msg" hidden></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
