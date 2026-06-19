@@ -1,5 +1,30 @@
 # 开发日志
 
+## v1.8.0 (2026-06-19)
+
+### 新增
+- 二级分类（子分类）支持：父分类下可嵌套子分类，子分类拥有独立的网址列表
+- 管理后台新增子分类表单：选择父分类 → 添加/编辑/删除子分类
+- 网址管理新增二级分类选择器：可选择将网址添加到父级直下或某个子分类
+- 侧边栏层级缩进显示子分类
+- 预设"开发者"分类下的「前端」「后端 & DevOps」子分类示例
+
+### 修复
+- R2 Worker 域名更新为自定义域名 `nav-data.915577.xyz`
+- 数据备份版本号同步更新
+
+---
+
+## v1.7.0 (2026-06-19)
+
+### 新增
+- 二级分类数据结构（`sub` 数组），DataStore 完整 CRUD 支持
+- 页面渲染子分类区域（sub-section），独立卡片网格
+- 管理后台分类列表嵌套显示子分类
+- 管理后台网址表单二级分类下拉选择
+
+---
+
 ## v1.6.0 (2026-06-19)
 
 ### 新增
@@ -38,7 +63,6 @@
 
 ### 修复
 - 管理面板宽度从 640px 扩大到 760px，标签间距优化，锁定按钮不再换行
-- 管理后台标签 ID 大小写一致性修复
 
 ---
 
@@ -48,7 +72,6 @@
 - 页面背景自定义功能（图片 URL / 纯色）
 - 网站图标手动设定（emoji 或图片 URL）
 - Favicon 多路回退：`api.xinac.net` → `0x3.com` → 源站 `/favicon.ico` → `🔗`
-- `worker.js` 和 `wrangler.toml` 部署配置文件
 
 ### 修复
 - Google favicon 服务在国内不可访问 → 替换为三路 CDN 回退链
@@ -65,8 +88,6 @@
 - 自定义分类：添加/编辑/删除/上移下移
 - 自定义网址：添加/编辑/删除，favicon 自动抓取
 - 管理员认证登录（密码哈希 + sessionStorage 会话）
-- 后台锁定按钮
-- 认证弹窗（首次设置密码 / 后续登录）
 
 ---
 
@@ -80,7 +101,6 @@
 - 键盘快捷键：`/` 聚焦搜索，`Esc` 取消
 - 响应式布局：6/5/4/3/2 列自适应
 - 右上角时钟显示
-- 版本号显示
 
 ---
 
@@ -88,13 +108,14 @@
 
 | 版本 | 问题 | 修复 |
 |------|------|------|
-| v1.0.0 | `.search-input:focus ~ .search-icon` 选择器无效（icon 在 input 之前） | 移除无效规则，仅用 `focus-within` |
-| v1.0.0 | 搜索引擎按钮文字在移动端未正确隐藏 | 按钮文字包裹 `<span>` 标签，CSS 精准控制 |
-| v1.0.0 | 搜索图标绑定了无效的 click 事件（`pointer-events: none`） | 移除 JS handler，图标纯装饰 |
-| v1.2.0 | `tabR2Sync` 与 `tabR2sync` ID 大小写不匹配 | 统一为 `tabR2sync` |
-| v1.3.0 | Google favicon 国内不可用 | 替换为 api.xinac.net + 0x3.com + 源站三路回退 |
-| v1.3.0 | `renderIconHTML` 中回退字符 `'�'` 应为 `'🔗'` | 修正回退 emoji |
-| v1.5.0 | Worker CORS 预检返回 401 | OPTIONS handler 移到 auth 检查之前 |
-| v1.5.0 | Worker URL 缺 `https://` 导致 fetch 发相对路径 | `setConfig` 自动补全协议前缀 |
-| v1.5.0 | Pages 部署未同步最新代码 | 需要手动 `wrangler pages deploy` |
-| v1.5.0 | `autoPush` 和 `autoPull` 未生效 | 添加日志、缩短防抖到 500ms、默认配置嵌入 |
+| v1.0.0 | `.search-input:focus ~ .search-icon` 选择器无效 | 仅用 `focus-within` |
+| v1.0.0 | 引擎按钮文字移动端未隐藏 | 文字包裹 `<span>` |
+| v1.0.0 | 搜索图标无效 click 事件 | 移除 handler |
+| v1.2.0 | `tabR2Sync` 大小写不匹配 | 统一 `tabR2sync` |
+| v1.3.0 | Google favicon 国内不可用 | 三路 CDN 回退 |
+| v1.3.0 | `renderIconHTML` 回退字符乱码 | 修正 emoji |
+| v1.5.0 | Worker CORS 预检 401 | OPTIONS 移到认证前 |
+| v1.5.0 | Worker URL 缺 `https://` | `setConfig` 自动补全 |
+| v1.5.0 | Pages 未同步最新代码 | 手动 redeploy |
+| v1.5.0 | autoPush/autoPull 未生效 | 日志 + 500ms 防抖 + 默认配置 |
+| v1.8.0 | R2 Worker 域名更新 | `nav-data.915577.xyz` |

@@ -1,6 +1,6 @@
 # 网址导航 (Nav)
 
-简洁好用的个人网址导航页面，支持自定义分类/网址、管理后台、Cloudflare R2 云同步。
+简洁好用的个人网址导航页面，支持二级分类、管理后台、Cloudflare R2 跨设备云同步。
 
 **在线预览**：`https://5b9e78d2.nav-page-dwm.pages.dev`
 
@@ -13,7 +13,8 @@
 |------|------|
 | 多引擎搜索 | Google / Bing / 百度 / DuckDuckGo，偏好自动记忆 |
 | 分类卡片 | 响应式网格布局，6/5/4/3/2 列自适应 |
-| 左侧导航栏 | 分类列表，点击平滑滚动，IntersectionObserver 自动高亮 |
+| 二级分类 | 父分类下嵌套子分类，独立网址区域 |
+| 左侧导航栏 | 分类树层级显示，点击平滑滚动，IntersectionObserver 自动高亮 |
 | 深色模式 | 浅色/深色切换，自动检测系统偏好 |
 | 键盘快捷键 | `/` 聚焦搜索框，`Esc` 取消 |
 | 时钟 | 右上角实时显示 |
@@ -21,8 +22,9 @@
 ### 管理后台
 | 功能 | 说明 |
 |------|------|
-| 分类管理 | 添加/编辑/删除/上移下移 |
-| 网址管理 | 添加/编辑/删除，图标支持 emoji、图片 URL、自动抓取 |
+| 分类管理 | 父分类：添加/编辑/删除/上移下移 |
+| 子分类管理 | 子分类：添加/编辑/删除 |
+| 网址管理 | 添加/编辑/删除，二级分类选择器，图标支持 emoji / 图片 URL / 自动抓取 |
 | 外观设置 | 自定义背景图片或纯色 |
 | 数据备份 | JSON 导出/导入，一键恢复默认 |
 | R2 同步 | 跨设备自动同步，配置测试/推送/拉取 |
@@ -51,12 +53,13 @@ nav/
 ├── worker.js               # Cloudflare Worker (R2 代理)
 ├── wrangler.toml           # Worker 部署配置
 ├── CHANGELOG.md            # 开发日志
+├── README.md               # 项目说明
 ├── .gitignore
 ├── css/
 │   └── style.css           # 全部样式 (CSS 变量主题)
 ├── js/
-│   ├── data.js             # 数据层 + DataStore (localStorage CRUD)
-│   ├── main.js             # 主入口：渲染、时钟、快捷键
+│   ├── data.js             # 数据层 + DataStore (localStorage CRUD，二级分类)
+│   ├── main.js             # 主入口：渲染、时钟、快捷键、侧边栏
 │   ├── theme.js            # 深色/浅色主题管理
 │   ├── search.js           # 多引擎搜索路由
 │   ├── auth.js             # 管理后台认证
@@ -97,14 +100,14 @@ wrangler r2 bucket create nav-data
 
 ```bash
 wrangler secret put AUTH_TOKEN
-# 输入自定义密钥，例如: nav-r2-mysecret2026
+# 输入自定义密钥
 ```
 
 ### 3. 部署 Worker
 
 ```bash
 wrangler deploy
-# 获得 Worker URL: https://nav-r2-sync.xxx.workers.dev
+# 获得 Worker URL，绑定自定义域名
 ```
 
 ### 4. 部署静态页面
@@ -115,20 +118,16 @@ wrangler pages deploy . --project-name=nav-page
 
 ### 5. 配置默认同步
 
-编辑 `js/sync.js`，将 `DEFAULT_R2_CONFIG` 改为你自己的 Worker URL 和 Auth Token：
+编辑 `js/sync.js`，修改 `DEFAULT_R2_CONFIG`：
 
 ```js
 const DEFAULT_R2_CONFIG = {
-  workerUrl: 'https://你的-worker.workers.dev',
+  workerUrl: 'https://你的域名',
   authToken: '你的密钥',
 };
 ```
 
-重新部署：
-
-```bash
-wrangler pages deploy . --project-name=nav-page
-```
+重新部署即可。
 
 ---
 
@@ -138,13 +137,16 @@ wrangler pages deploy . --project-name=nav-page
 1. 点击右上角 ⚙️ 齿轮
 2. 首次使用设置管理密码（至少 4 位）
 3. 后续访问输入密码登录
-4. 锁定按钮退出登录
 
-### 添加网址
+### 添加子分类
+1. 切换到「分类管理」标签
+2. 下方表单选择父分类 → 输入子分类名称和图标 → 添加
+3. 子分类在列表中缩进显示，可编辑或删除
+
+### 添加网址到子分类
 1. 切换到「网址管理」标签
-2. 选择分类 → 输入 URL → 自动抓取 favicon 并建议名称
-3. 图标字段可选：留空自动抓取，手动输入 emoji 或图片 URL
-4. 点击「添加网址」
+2. 选择父分类 → 选择子分类（或"直接属于此分类"）
+3. 输入 URL → 自动抓取 favicon → 添加
 
 ### 跨设备同步
 1. 首次在后台「R2同步」→ 填入 Worker URL 和 Token → 测试 → 推送
@@ -160,7 +162,7 @@ wrangler pages deploy . --project-name=nav-page
 
 ## 版本
 
-当前版本：**v1.6.0**
+当前版本：**v1.8.0**
 
 详细变更记录见 [CHANGELOG.md](./CHANGELOG.md)。
 

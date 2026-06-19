@@ -2,7 +2,7 @@
 // Main — initialization, rendering, keyboard shortcuts, sidebar
 // ============================================================
 
-const APP_VERSION = '1.7.0';
+const APP_VERSION = '1.8.0';
 
 (function () {
   'use strict';
