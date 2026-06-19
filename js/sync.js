@@ -125,22 +125,26 @@ const CloudSync = {
     }
   },
 
-  /** Auto-push on data change (debounced, silent) */
+  /** Auto-push on data change (debounced, logged) */
   autoPush() {
-    if (!this.isConfigured()) return;
+    if (!this.isConfigured()) { console.log('[Sync] 未配置，跳过推送'); return; }
+    console.log('[Sync] 数据变更，500ms 后自动推送...');
     clearTimeout(this._pushTimer);
     this._pushTimer = setTimeout(async () => {
-      try { await this.push(); } catch (e) { /* silent */ }
-    }, 2000); // debounce 2s
+      const r = await this.push();
+      console.log('[Sync] 推送结果:', r.ok ? '✅ 成功' : '❌ ' + r.error);
+    }, 500);
   },
 
   /** Auto-pull on page load — always pulls, merges if remote is newer */
   async autoPull() {
-    if (!this.isConfigured()) return false;
+    if (!this.isConfigured()) { console.log('[Sync] 未配置，跳过拉取'); return false; }
+    console.log('[Sync] 页面加载，从 R2 拉取...');
     try {
       const result = await this.pull();
-      if (result.ok && !result.skipped && result.data) {
-        // Apply theme & background immediately
+      if (result.skipped) { console.log('[Sync] 远程数据未变化，跳过'); return false; }
+      if (result.ok && result.data) {
+        console.log('[Sync] 拉取成功，合并数据');
         if (result.data.theme) Theme.apply(result.data.theme);
         if (result.data.background) {
           try {
@@ -150,14 +154,14 @@ const CloudSync = {
             }
           } catch (e) { /* skip */ }
         }
-        // Update search engine UI
         const engine = result.data.searchEngine || 'google';
         document.querySelectorAll('.engine-btn').forEach(b => {
           b.classList.toggle('active', b.dataset.engine === engine);
         });
         return true;
       }
-    } catch (e) { /* silent */ }
+      console.log('[Sync] 拉取失败:', result.error);
+    } catch (e) { console.log('[Sync] 拉取异常:', e.message); }
     return false;
   },
 };
